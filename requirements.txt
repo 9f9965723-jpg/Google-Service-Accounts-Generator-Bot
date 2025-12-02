@@ -12,11 +12,9 @@ sqlalchemy==1.3.23
 tenacity>=6.0.0
 python-magic
 wget
-asyncio
 httplib2
 pySmartDL
 psutil
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
-google_auth_oauthlib
