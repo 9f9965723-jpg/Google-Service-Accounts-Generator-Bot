@@ -1,15 +1,16 @@
 from flask import Flask, request
-from telegram import Bot, Update
-from telegram.ext import Dispatcher, CommandHandler, ContextTypes
+from telegram import Update, Bot
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from config import config
 from pymongo import MongoClient
+import asyncio
 
 # --- Flask app ---
 app = Flask(__name__)
 
 # --- Telegram bot ---
-bot = Bot(token=config.BOT_TOKEN)
-dispatcher = Dispatcher(bot, None, workers=0)
+bot_token = config.BOT_TOKEN
+application = ApplicationBuilder().token(bot_token).build()
 
 # --- MongoDB ---
 client = MongoClient(config.DATABASE_URL)
@@ -20,13 +21,13 @@ users_collection = db['users']
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("بوت يعمل على Render!")
 
-dispatcher.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("start", start))
 
 # --- Webhook route ---
-@app.route(f'/{config.BOT_TOKEN}', methods=['POST'])
+@app.route(f'/{bot_token}', methods=['POST'])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-    dispatcher.process_update(update)
+    update = Update.de_json(request.get_json(force=True), bot=application.bot)
+    asyncio.run(application.update_queue.put(update))  # أرسل update للـ queue
     return "ok"
 
 # --- Root route ---
