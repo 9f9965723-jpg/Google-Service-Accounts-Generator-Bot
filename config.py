@@ -1,14 +1,28 @@
 import os
 
-class config:
+class Config:
+    # توكن بوت تيليجرام
     BOT_TOKEN = os.environ.get('BOT_TOKEN')
+
+    # بيانات Pyrogram
     APP_ID = os.environ.get('APP_ID')
     API_HASH = os.environ.get('API_HASH')
+
+    # رابط قاعدة البيانات MongoDB
     DATABASE_URL = os.environ.get('DATABASE_URL')
-    SUDO_USERS = os.environ.get('SUDO_USERS')
+    
+    # اسم قاعدة البيانات (مطلوب إذا لم يكن موجود ضمن URI)
+    DATABASE_NAME = os.environ.get('DATABASE_NAME', 'mydb')
+
+    # المستخدمين المصرح لهم بالبوت (مفصولين بفواصل)
+    SUDO_USERS = list(map(int, os.environ.get('SUDO_USERS', '').split(','))) if os.environ.get('SUDO_USERS') else []
+
+    # روابط وأماكن التخزين
     SUPPORT_CHAT_LINK = "t.me/moedyiu"
     DOWNLOAD_DIRECTORY = "./downloads/"
 
+# نسخة جاهزة للاستدعاء
+config = Config()
 
 
 class BotCommands:
