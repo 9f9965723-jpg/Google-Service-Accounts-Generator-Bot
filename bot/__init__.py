@@ -21,7 +21,7 @@ try:
     SUPPORT_CHAT_LINK = os.environ.get('SUPPORT_CHAT_LINK', 'https://t.me/ViperCommunity')
     DOWNLOAD_DIRECTORY = os.environ.get("DOWNLOAD_DIRECTORY", "./downloads/")
   else:
-    from bot.config import config
+    from config import config
     BOT_TOKEN = config.BOT_TOKEN
     APP_ID = config.APP_ID
     API_HASH = config.API_HASH
