@@ -1,36 +1,37 @@
 # bot.py
 from flask import Flask, request
-from telegram import Bot, Update
-from telegram.ext import Dispatcher, CommandHandler
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from config import config
 from pymongo import MongoClient
+import asyncio
 
 # --- Flask app ---
 app = Flask(__name__)
-
-# --- Telegram bot ---
-bot = Bot(token=config.BOT_TOKEN)
-dispatcher = Dispatcher(bot, None)
 
 # --- MongoDB connection ---
 client = MongoClient(config.DATABASE_URL)
 db = client.get_database()
 users_collection = db['users']
 
-# --- /start command ---
-def start(update, context):
-    update.message.reply_text("بوت يعمل على Render!")
+# --- Telegram bot using Application (v20+) ---
+application = ApplicationBuilder().token(config.BOT_TOKEN).build()
 
-dispatcher.add_handler(CommandHandler("start", start))
+# --- /start command ---
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("بوت يعمل على Render!")
+
+application.add_handler(CommandHandler("start", start))
 
 # --- Webhook route ---
 @app.route(f'/{config.BOT_TOKEN}', methods=['POST'])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-    dispatcher.process_update(update)
+    json_update = request.get_json(force=True)
+    update = Update.de_json(json_update, application.bot)
+    asyncio.get_event_loop().create_task(application.process_update(update))
     return "ok"
 
 # --- root route ---
 @app.route("/")
 def index():
-    return "بوت تيليجرام يعمل!"
+    return "بوت تيليجرام يعمل على Render!"
