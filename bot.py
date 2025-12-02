@@ -6,8 +6,10 @@ from config import config
 from pymongo import MongoClient
 import asyncio
 
-# --- Flask app ---
+from flask import Flask
+
 app = Flask(__name__)
+
 
 # --- MongoDB connection ---
 client = MongoClient(config.DATABASE_URL)
