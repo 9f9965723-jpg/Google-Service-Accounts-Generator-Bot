@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 # --- MongoDB connection ---
 client = MongoClient(config.DATABASE_URL)
-db = client.get_database()
+db = client["mydb"]
 users_collection = db['users']
 
 # --- Telegram bot using Application (v20+) ---
